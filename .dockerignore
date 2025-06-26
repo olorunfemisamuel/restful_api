@@ -1,0 +1,4 @@
+.git
+node_modules
+vendor/*     # vendor will be rebuilt inside the container
+storage/logs
