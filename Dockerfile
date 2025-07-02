@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     git \
     libzip-dev \
     && docker-php-ext-install \
-    pdo_mysql \
+    pdo_postgresql \
     mbstring \
     exif \
     pcntl \
@@ -30,7 +30,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 
 # Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
+
 
 # Cache config and routes
 RUN php artisan config:cache && \
