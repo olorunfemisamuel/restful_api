@@ -27,7 +27,9 @@ RUN apk add --no-cache \
     libxml2-dev \
     curl \
     bison \
-    re2c; 
+    re2c \
+    php82-tokenizer \ 
+    ;
 
 #Install PHP extensions
 # RUN docker-php-ext-install \
@@ -47,7 +49,6 @@ RUN set -ex; \
         pdo_pgsql \
         pgsql \
         zip \
-        tokenizer \
         mbstring \
         bcmath \
         exif \
