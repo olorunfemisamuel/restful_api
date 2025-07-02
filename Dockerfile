@@ -25,7 +25,9 @@ RUN apk add --no-cache \
     freetype-dev \
     postgresql-dev \
     libxml2-dev \
-    curl
+    curl \
+    bison \
+    re2c; 
 
 #Install PHP extensions
 # RUN docker-php-ext-install \
