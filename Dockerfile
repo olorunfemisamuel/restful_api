@@ -51,7 +51,7 @@ RUN set -ex; \
         exif \
         pcntl \
         sockets \
-        xml \;
+        xml;
 
     # Configure working dir
 WORKDIR /var/www/html
