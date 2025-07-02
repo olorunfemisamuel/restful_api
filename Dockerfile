@@ -27,18 +27,31 @@ RUN apk add --no-cache \
     libxml2-dev \
     curl
 
-# Install PHP extensions
-RUN docker-php-ext-install \
-    pdo \
-    pdo_pgsql \
-    zip \
-     tokenizer \
-    mbstring \
-    bcmath \
-    exif \
-    pcntl \
-    sockets \
-    xml
+#Install PHP extensions
+# RUN docker-php-ext-install \
+#     pdo_pgsql \
+#     zip \
+#      tokenizer \
+#     mbstring \
+#     bcmath \
+#     exif \
+#     pcntl \
+#     sockets \
+#     xml
+
+RUN set -ex; \
+    docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql; \
+    docker-php-ext-install \
+        pdo_pgsql \
+        pgsql \
+        zip \
+        tokenizer \
+        mbstring \
+        bcmath \
+        exif \
+        pcntl \
+        sockets \
+        xml \;
 
     # Configure working dir
 WORKDIR /var/www/html
