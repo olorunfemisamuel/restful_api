@@ -1,44 +1,62 @@
-# Use official PHP 8.1 FPM image
-FROM php:8.1-fpm
+#Stage 1 - Build Composer dependencies
+FROM composer:2 AS vendor
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    curl \
-    git \
-    libzip-dev \
-    && docker-php-ext-install \
-    pdo_postgresql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    zip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /var/www
-
-# Install Composer globally
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Copy project files
-COPY . .
-
-# Install PHP dependencies
+WORKDIR /app
+COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
 
+# Stage 2 - Application image
+FROM php:8.2-fpm-alpine
 
-# Cache config and routes
-RUN php artisan config:cache && \
-    php artisan route:cache
+# Install system dependencies
+RUN apk add --no-cache \
+    bash \
+    nginx \
+    supervisor \
+    libzip-dev \
+    oniguruma-dev \
+    autoconf \
+    gcc \
+    g++ \
+    make \
+    zlib-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    postgresql-dev \
+    libxml2-dev \
+    curl
 
-# Expose the port Laravel will run on
-EXPOSE 8000
+# Install PHP extensions
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    zip \
+     tokenizer \
+    mbstring \
+    bcmath \
+    exif \
+    pcntl \
+    sockets \
+    xml
 
-# Start Laravel using artisan
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+    # Configure working dir
+WORKDIR /var/www/html
+
+# Copy app files
+COPY . .
+
+# Copy composer deps from previous stage
+COPY --from=vendor /app/vendor /var/www/html/vendor
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Copy Nginx and Supervisor config
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
+
+# Expose port for Render
+EXPOSE 80
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
