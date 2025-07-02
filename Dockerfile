@@ -59,4 +59,5 @@ COPY docker/supervisord.conf /etc/supervisord.conf
 # Expose port for Render
 EXPOSE 80
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["php-fpm"]
+
