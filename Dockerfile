@@ -29,6 +29,7 @@ RUN apk add --no-cache \
     bison \
     re2c \
     php82-tokenizer \ 
+     linux-headers \
     ;
 
 #Install PHP extensions
