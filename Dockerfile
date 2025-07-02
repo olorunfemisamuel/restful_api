@@ -32,6 +32,11 @@ RUN apk add --no-cache \
      linux-headers \
     ;
 
+# Create the directory for Supervisor logs
+RUN mkdir -p /var/log/supervisor \
+    && chown -R root:root /var/log/supervisor \
+    && chmod -R 755 /var/log/supervisor;
+
 #Install PHP extensions
 # RUN docker-php-ext-install \
 #     pdo_pgsql \
